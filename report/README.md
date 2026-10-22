@@ -1,12 +1,3 @@
----
-type: Курс по DevOPS Home Work
-module: LLM в разработке
-lesson_no: 1
-lesson_theme: Практика API
----
-> [!bookmark]
->
-> **Домашнее задание: <%+ tp.file.title %>**
 
 В этом задании вы сделаете первый реальный шаг в работе с большими языковыми моделями через API. Вы не просто изучите теорию — вы напишете код, который заставляет модель возвращать не просто текст, а строгие структурированные данные в формате JSON, которые можно сразу использовать в программе.
 
@@ -18,7 +9,7 @@ lesson_theme: Практика API
 ● реализуете прикладной сценарий: построите мини-пайплайн для автоматического разбора резюме и вакансий, а также сравните несколько LLM по скорости и качеству извлечения структурированных данных.
 
 ##  Инструменты, которые пригодятся для выполнения задания:
-● Зарегистрируйтесь на платформе [_______________](https://developers.sber.ru/docs/ru/gigachat/tariffs/individual-tariffs#terms-update) и получите API-ключ
+● Зарегистрируйтесь на платформе [sber](https://developers.sber.ru/docs/ru/gigachat/tariffs/individual-tariffs#terms-update) и получите API-ключ
 ● Python 3.10+ с установленными библиотеками: groq, python-dotenv;
 ● Jupyter Notebook или Google Colab.
 ● [Учебный ноутбук](https://u.netology.ru/backend/uploads/lms/content_assets/file/15336/praktika_groq_structured.zip) Структурированный вывод с  API
@@ -54,6 +45,7 @@ lesson_theme: Практика API
 - получил ключи авторизации на ресурсе Giga от Сбера (https://developers.sber.ru/docs/ru/gigachat/tariffs/individual-tariffs#terms-update) вместо недоступного в РФ Groq с соответствующим внесением изменений  в сценарий выполнения работы.
 - Скачал и сложил в репозиторий с заданием сертификаты Минцифры России, необходимые для работы Giga
 - Настроил рабочее окружение:
+
 ```bash
 cd ~/devops/llm_dev
 sudo apt update && sudo apt install -y python3-venv python3-pip
@@ -146,6 +138,7 @@ GIGACHAT_CA_BUNDLE_FILE=certs/Russian_Trusted_Root_CA.cer
 ```
 
 ##### Ячейка 1:
+
 ```python
 !pip install gigachat python-dotenv
 
@@ -174,7 +167,9 @@ print(f'CA-бандл: {ca_bundle}')
 ```
 
 ![](<Pasted image 20261022161537.png>)
+
 ##### Ячейка 2
+
 ```python
 resume_text = """
 Привет! Меня зовут Анна Соколова, мне 28 лет. Последние 4 года работаю
@@ -184,7 +179,7 @@ PostgreSQL, Redis. Есть опыт с Docker и Kubernetes. Закончила
 с зарплатой от 300 000 рублей. Готова к удалённой работе или гибриду.
 """
 
-# Обычный запрос без требования структуры — контракт v1
+
 chat = Chat(
     model='GigaChat-2',
     messages=[
@@ -213,7 +208,9 @@ except Exception as e:
 ```
 
 ![](<Pasted image 20261022161601.png>)
+
 ##### Ячейка 3:
+
 ```text
 ## 3. Решение: структурированный вывод (json_schema)
 
@@ -299,6 +296,7 @@ print(f"Ожидаемая зарплата: {candidate['salary_from']:,} руб
 ![](<Pasted image 20261022161628.png>)
 
 ##### Ячейка 4
+
 ```python
 from gigachat.exceptions import RateLimitError
 
@@ -492,7 +490,6 @@ print(f"   максимальная: {max(salaries):,} руб.".replace(',', ' '
 В полученном результате у Юлии  модель «развернула» скобки: в исходном тексте было «Python (Django, FastAPI)» и «Автотесты на Python (pytest, ...)», и GigaChat посчитала конкретные фреймворки самодостаточными навыками, а родительский Python выкинула. Это несогласованность извлечения данных. Фильтр по ` == ` совпадению элементов очень хрупок, если источник LLM. Нормализация:
 
 ```python
-# Задание 3: ищем Python как подстроку в любом навыке, без учёта регистра
 python_devs = [
     r for r in results
     if any('python' in s.lower() for s in r['skills'])
@@ -511,6 +508,7 @@ for r in python_devs:
 Проблемы извлечения: LLM-экстракция без post-processing даёт данные с шумом. Навыки сворачиваются в составные строки и смешиваются с описаниями опыта. Нужна нормализация подстрокой, разбиение составных навыков регэкспом, а в продакшене - `enum` допустимых значений прямо в JSON-схеме `("skills": {"type": "array", "items": {"enum": [...]}})`, тогда модель физически не сможет вернуть ничего вне словаря.
 
 ##### Ячейка 6
+
 ```text
 ## 6. Сравнение моделей
 
@@ -798,7 +796,4 @@ for i, vac_text in enumerate(vacancies, 1):
 ![](<Pasted image 20261022174102.png>)
 
 
-> [!calendar] Дата
-> **Добавлено:** 2026-10-22  12:45
-> **Изменено: **<%+ tp.file.last_modified_date("YYYY-MM-DD HH:mm") %>
-> **Тема задания:** <%+ tp.file.title %>
+
